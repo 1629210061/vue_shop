@@ -12,29 +12,34 @@
     <!-- 页面主体区域 -->
     <el-container>
       <!-- 侧边栏 -->
-      <el-aside width="200px">
+      <el-aside :width="isCollapse?'64px':'200px'">
+        <div class="toggle-button" @click="toggleMenu">|||</div>
         <!-- 侧边菜单栏 -->
-        <el-menu class="el-menu-vertical-demo" background-color="#c0d7e2" text-color="#000" active-text-color="#ffd04b">
+        <!-- collapse实现隐藏显示效果  unique-opened子标签只能打开唯一一个 router打开路由，那么：index值就为跳转的路径-->
+        <el-menu class="el-menu-vertical-demo" background-color="#c0d7e2" text-color="#000" active-text-color="#ffd04b"
+          :unique-opened="true" :collapse="isCollapse" :collapse-transition="false" router :default-active="activePath">
           <!-- 一级菜单 -->
           <el-submenu :index="item.id+''" v-for="item in menus" :key="item.id">
             <template slot="title">
-              <i class="el-icon-location"></i>
+              <i :class="icons[item.id]"></i>
               <span>{{item.authwame}}</span>
             </template>
             <!-- 二级菜单 -->
-            <el-menu-item :index="child.id+''" v-for="child in item.children" :key="child.id">
+            <el-menu-item :index="child.path" v-for="child in item.children" :key="child.id"
+              @click="active(child.path)">
               <template slot="title">
-                <i class="el-icon-location"></i>
+                <i class="iconfont iconall-fill"></i>
                 <span>{{child.authlame}}</span>
               </template>
             </el-menu-item>
           </el-submenu>
-
         </el-menu>
       </el-aside>
       <!-- 右侧内容部分 -->
       <el-container>
-        <el-main>Main</el-main>
+        <el-main>
+          <router-view></router-view>
+        </el-main>
       </el-container>
     </el-container>
   </el-container>
@@ -44,7 +49,14 @@
 export default {
   data() {
     return {
-      menus: ''
+      menus: '',
+      icons: {
+        1: 'iconfont iconproduct1',
+        2: 'iconfont iconpic-fill1',
+        3: 'iconfont iconstore-fill'
+      },
+      isCollapse: false,
+      activePath: '/user'
     }
   },
   methods: {
@@ -58,6 +70,13 @@ export default {
       if (!res.status === 200) return this.$message.error('获取菜单数据失败')
       this.menus = res.data.data
       console.log(this.menus)
+    },
+    toggleMenu() {
+      this.isCollapse = !this.isCollapse
+    },
+    active(path) {
+      this.activePath = path
+      console.log(this.activePath)
     }
   },
   created() {
@@ -71,7 +90,7 @@ export default {
 .el-header {
   color: white;
   font-size: 18px;
-  background-color: #6daac7;
+  background-color: #88aec0;
   line-height: 60px;
   display: flex;
   justify-content: space-between;
@@ -88,10 +107,22 @@ export default {
   }
 }
 
+// 侧边导航栏
 .el-aside {
   background-color: #c0d7e2;
   color: #333;
-  text-align: center;
+  .toggle-button {
+    text-align: center;
+    background-color: #a0cacf;
+    line-height: 30px;
+    letter-spacing: 2px;
+  }
+  .el-menu {
+    border: 0;
+    .iconfont {
+      margin-right: 5px;
+    }
+  }
 }
 
 .el-main {

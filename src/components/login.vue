@@ -53,7 +53,7 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (!valid) return
         this.axios
-          .post('/getData', {
+          .post('/getToken', {
             name: this.loginForm.name,
             password: this.loginForm.password
           })
